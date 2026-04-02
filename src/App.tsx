@@ -1,10 +1,55 @@
+import { useEffect, useState } from "react";
 import { useWalletConnection } from "@solana/react-hooks";
+
+type BackendVersion = {
+  project: string;
+  version: string;
+};
 
 export default function App() {
   const { connectors, connect, disconnect, wallet, status } =
     useWalletConnection();
+  const [backendVersion, setBackendVersion] = useState<BackendVersion | null>(
+    null
+  );
+  const [versionError, setVersionError] = useState<string | null>(null);
 
   const address = wallet?.account.address.toString();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadBackendVersion() {
+      try {
+        const response = await fetch("/api/version");
+
+        if (!response.ok) {
+          throw new Error(`Backend request failed with ${response.status}`);
+        }
+
+        const payload = (await response.json()) as BackendVersion;
+
+        if (!cancelled) {
+          setBackendVersion(payload);
+          setVersionError(null);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setVersionError(
+            error instanceof Error
+              ? error.message
+              : "Failed to load backend version"
+          );
+        }
+      }
+    }
+
+    void loadBackendVersion();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-bg1 text-foreground">
@@ -149,6 +194,17 @@ export default function App() {
             </button>
           </div>
         </section>
+
+        <footer className="mt-auto border-t border-border-low pt-6 text-sm text-muted">
+          <p>
+            Backend status:{" "}
+            {backendVersion
+              ? `${backendVersion.project} v${backendVersion.version}`
+              : versionError
+                ? `Unavailable (${versionError})`
+                : "Loading..."}
+          </p>
+        </footer>
       </main>
     </div>
   );
