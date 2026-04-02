@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useWalletConnection } from "@solana/react-hooks";
+import STLViewerComponent from "./components/STLViewerComponent";
 
 type BackendVersion = {
   project: string;
@@ -141,6 +142,16 @@ export default function App() {
             </li>
           </ul>
         </header>
+
+        <section className="w-full max-w-3xl space-y-4 rounded-2xl border border-border-low bg-card p-6 shadow-[0_20px_80px_-50px_rgba(0,0,0,0.35)]">
+          <div className="space-y-1">
+            <p className="text-lg font-semibold">3D preview: cable winder</p>
+            <p className="text-sm text-muted">
+              STL model imported from the 3d_models project.
+            </p>
+          </div>
+          <STLViewerComponent url="/models/winder.stl" />
+        </section>
 
         <section className="w-full max-w-3xl space-y-4 rounded-2xl border border-border-low bg-card p-6 shadow-[0_20px_80px_-50px_rgba(0,0,0,0.35)]">
           <div className="flex items-start justify-between gap-4">
