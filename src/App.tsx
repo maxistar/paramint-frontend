@@ -6,6 +6,8 @@ type BackendVersion = {
   version: string;
 };
 
+const backendBaseUrl = import.meta.env.VITE_BACKEND_URL ?? "http://localhost:8000";
+
 export default function App() {
   const { connectors, connect, disconnect, wallet, status } =
     useWalletConnection();
@@ -21,7 +23,7 @@ export default function App() {
 
     async function loadBackendVersion() {
       try {
-        const response = await fetch("/api/version");
+        const response = await fetch(`${backendBaseUrl}/api/version`);
 
         if (!response.ok) {
           throw new Error(`Backend request failed with ${response.status}`);
