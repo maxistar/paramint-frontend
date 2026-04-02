@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useWalletConnection } from "@solana/react-hooks";
 import STLViewerComponent from "./components/STLViewerComponent";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 type BackendVersion = {
   project: string;
@@ -8,6 +9,7 @@ type BackendVersion = {
 };
 
 const backendBaseUrl = import.meta.env.VITE_BACKEND_URL ?? "http://localhost:8000";
+const modelUrl = `${import.meta.env.BASE_URL}models/winder.stl`;
 
 export default function App() {
   const { connectors, connect, disconnect, wallet, status } =
@@ -150,7 +152,9 @@ export default function App() {
               STL model imported from the 3d_models project.
             </p>
           </div>
-          <STLViewerComponent url="/models/winder.stl" />
+          <ErrorBoundary>
+            <STLViewerComponent url={modelUrl} />
+          </ErrorBoundary>
         </section>
 
         <section className="w-full max-w-3xl space-y-4 rounded-2xl border border-border-low bg-card p-6 shadow-[0_20px_80px_-50px_rgba(0,0,0,0.35)]">
