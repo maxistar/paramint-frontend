@@ -10,6 +10,12 @@ type BackendVersion = {
 
 const backendBaseUrl = import.meta.env.VITE_BACKEND_URL ?? "http://localhost:8000";
 const modelUrl = `${import.meta.env.BASE_URL}models/winder.stl`;
+const homePath = import.meta.env.BASE_URL;
+const howItWorksPath = `${import.meta.env.BASE_URL}how-it-works`;
+
+function getCurrentPath() {
+  return window.location.pathname;
+}
 
 export default function App() {
   const { connectors, connect, disconnect, wallet, status } =
@@ -18,6 +24,7 @@ export default function App() {
     null
   );
   const [versionError, setVersionError] = useState<string | null>(null);
+  const [currentPath, setCurrentPath] = useState(getCurrentPath);
 
   const address = wallet?.account.address.toString();
 
@@ -56,6 +63,154 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    function handleLocationChange() {
+      setCurrentPath(getCurrentPath());
+    }
+
+    window.addEventListener("popstate", handleLocationChange);
+
+    return () => {
+      window.removeEventListener("popstate", handleLocationChange);
+    };
+  }, []);
+
+  function navigate(path: string) {
+    window.history.pushState({}, "", path);
+    setCurrentPath(path);
+  }
+
+  const isHowItWorksPage =
+    currentPath === howItWorksPath ||
+    currentPath === `${howItWorksPath}/` ||
+    currentPath.endsWith("/how-it-works");
+
+  const footer = (
+    <footer className="mt-auto border-t border-border-low pt-6 text-sm text-muted">
+      <p>
+        Backend status:{" "}
+        {backendVersion
+          ? `${backendVersion.project} v${backendVersion.version}`
+          : versionError
+            ? `Unavailable (${versionError})`
+            : "Loading..."}
+      </p>
+    </footer>
+  );
+
+  if (isHowItWorksPage) {
+    return (
+      <div className="relative min-h-screen overflow-x-clip bg-bg1 text-foreground">
+        <main className="relative z-10 mx-auto flex min-h-screen max-w-4xl flex-col gap-10 border-x border-border-low px-6 py-16">
+          <header className="space-y-4">
+            <button
+              type="button"
+              onClick={() => navigate(homePath)}
+              className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-muted underline underline-offset-4 transition hover:text-foreground"
+            >
+              Back to main page
+            </button>
+            <div className="space-y-3">
+              <p className="text-sm uppercase tracking-[0.18em] text-muted">
+                How It Works
+              </p>
+              <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+                Paramint: create and own your 3D models
+              </h1>
+              <p className="max-w-2xl text-base leading-relaxed text-muted">
+                Paramint is a tool for generating parametric 3D models, where
+                you do not just download a file, you own your design.
+              </p>
+            </div>
+          </header>
+
+          <section className="w-full max-w-3xl space-y-6 rounded-2xl border border-border-low bg-card p-6 shadow-[0_20px_80px_-50px_rgba(0,0,0,0.35)]">
+            <div className="space-y-3">
+              <h2 className="text-xl font-semibold text-foreground">
+                How it works
+              </h2>
+              <ol className="space-y-4 text-sm leading-relaxed text-muted">
+                <li>
+                  <span className="font-medium text-foreground">
+                    1. Choose a template
+                  </span>
+                  {" "}
+                  Start with a ready-made model, for example a cable holder.
+                </li>
+                <li>
+                  <span className="font-medium text-foreground">
+                    2. Adjust the parameters
+                  </span>
+                  {" "}
+                  Change the size and shape and see the result immediately.
+                </li>
+                <li>
+                  <span className="font-medium text-foreground">
+                    3. Connect your wallet and create the model
+                  </span>
+                  {" "}
+                  Create an on-chain asset that ties this configuration to you.
+                </li>
+                <li>
+                  <span className="font-medium text-foreground">
+                    4. Get full control
+                  </span>
+                  {" "}
+                  Only the owner can change parameters, rebuild the model, and
+                  export files for printing.
+                </li>
+              </ol>
+            </div>
+
+            <div className="space-y-3">
+              <h2 className="text-xl font-semibold text-foreground">
+                Openness and ownership
+              </h2>
+              <p className="text-sm leading-relaxed text-muted">
+                All models are stored as open artifacts, but only the owner
+                controls their recipe.
+              </p>
+              <p className="text-sm leading-relaxed text-muted">
+                You are not just downloading an STL, you own the ability to
+                recreate the object.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h2 className="text-xl font-semibold text-foreground">
+                Why it matters
+              </h2>
+              <ul className="space-y-2 text-sm leading-relaxed text-muted">
+                <li>Parametric design instead of static files.</li>
+                <li>Control through ownership, not restrictions.</li>
+                <li>The ability to improve and adapt the model over time.</li>
+              </ul>
+            </div>
+
+            <div className="space-y-3">
+              <h2 className="text-xl font-semibold text-foreground">
+                Try it
+              </h2>
+              <p className="text-sm leading-relaxed text-muted">
+                Create your first model in just a few clicks and become its
+                owner.
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate(homePath)}
+                className="inline-flex cursor-pointer items-center rounded-lg border border-border-low bg-cream px-4 py-2 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:shadow-sm"
+              >
+                Start Designing
+              </button>
+            </div>
+          </section>
+
+          {footer}
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-h-screen overflow-x-clip bg-bg1 text-foreground">
       <main className="relative z-10 mx-auto flex min-h-screen max-w-4xl flex-col gap-10 border-x border-border-low px-6 py-16">
@@ -64,20 +219,35 @@ export default function App() {
             3DMint - making 3D NFTs on Solana
           </p>
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-            Become a 3d creator, not a consumer of tools
+            Become a 3d creator, not a consumer
           </h1>
-          <p className="max-w-3xl text-base leading-relaxed text-muted">
-            Customize your 3d models for you needs, then mint them as NFTs to own, sell, or share.
-          </p>
+          <div className="space-y-3">
+            <p className="max-w-3xl text-base leading-relaxed text-muted">
+              Customize your 3d models for your needs, then mint them as NFTs to
+              own, sell, or share.
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate(howItWorksPath)}
+              className="cursor-pointer text-sm font-medium text-foreground underline underline-offset-4 transition hover:text-muted"
+            >
+              Read more
+            </button>
+          </div>
           <ol className="mt-4 space-y-2 text-sm text-foreground">
             <li className="flex gap-2">
               <span
                 className="mt-1.5 h-2 w-2 rounded-full bg-foreground/60"
                 aria-hidden
               />
-              <div>
-                1. customize the 3D model for your needs
-              </div>
+              <div>1. customize the 3D model for your needs</div>
+            </li>
+            <li className="flex gap-2">
+              <span
+                className="mt-1.5 h-2 w-2 rounded-full bg-foreground/60"
+                aria-hidden
+              />
+              <div>2. mint an NFT for your model.</div>
             </li>
             <li className="flex gap-2">
               <span
@@ -85,18 +255,10 @@ export default function App() {
                 aria-hidden
               />
               <div>
-                2. mint as an NFT for your model.
+                3. download the NFT for 3D printing, AR, or whatever you can
+                imagine.
               </div>
             </li>
-            <li className="flex gap-2">
-              <span
-                className="mt-1.5 h-2 w-2 rounded-full bg-foreground/60"
-                aria-hidden
-              />
-              <div>
-                3. download the NFT for 3D printing, AR, or whatever you can imagine.
-              </div>
-            </li>            
           </ol>
         </header>
 
@@ -167,16 +329,7 @@ export default function App() {
           </div>
         </section>
 
-        <footer className="mt-auto border-t border-border-low pt-6 text-sm text-muted">
-          <p>
-            Backend status:{" "}
-            {backendVersion
-              ? `${backendVersion.project} v${backendVersion.version}`
-              : versionError
-                ? `Unavailable (${versionError})`
-                : "Loading..."}
-          </p>
-        </footer>
+        {footer}
       </main>
     </div>
   );
