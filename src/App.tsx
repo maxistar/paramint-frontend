@@ -315,22 +315,6 @@ export default function App() {
               Customize your 3d models for your needs, then mint them as NFTs to
               own, sell, or share.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <button
-                type="button"
-                onClick={() => navigate(howItWorksPath)}
-                className="cursor-pointer text-sm font-medium text-foreground underline underline-offset-4 transition hover:text-muted"
-              >
-                Read more
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate(modelParametersPath)}
-                className="cursor-pointer text-sm font-medium text-foreground underline underline-offset-4 transition hover:text-muted"
-              >
-                Model parameters
-              </button>
-            </div>
           </div>
           <ol className="mt-4 space-y-2 text-sm text-foreground">
             <li className="flex gap-2">
@@ -358,6 +342,13 @@ export default function App() {
               </div>
             </li>
           </ol>
+          <button
+            type="button"
+            onClick={() => navigate(howItWorksPath)}
+            className="inline-flex cursor-pointer text-sm font-medium text-foreground underline underline-offset-4 transition hover:text-muted"
+          >
+            Read more
+          </button>
         </header>
 
         <section className="w-full max-w-3xl space-y-4 rounded-2xl border border-border-low bg-card p-6 shadow-[0_20px_80px_-50px_rgba(0,0,0,0.35)]">
@@ -370,6 +361,13 @@ export default function App() {
           <ErrorBoundary>
             <STLViewerComponent url={modelUrl} />
           </ErrorBoundary>
+          <button
+            type="button"
+            onClick={() => navigate(modelParametersPath)}
+            className="inline-flex cursor-pointer text-sm font-medium text-foreground underline underline-offset-4 transition hover:text-muted"
+          >
+            Model parameters
+          </button>
         </section>
 
         <section className="w-full max-w-3xl space-y-4 rounded-2xl border border-border-low bg-card p-6 shadow-[0_20px_80px_-50px_rgba(0,0,0,0.35)]">
