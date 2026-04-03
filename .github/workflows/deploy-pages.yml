@@ -36,7 +36,7 @@ jobs:
       - name: Build for GitHub Pages
         run: npm run build
         env:
-          VITE_BACKEND_URL: dddmint.p.preloader.org
+          VITE_BACKEND_URL: https://dddmint.p.preloader.org
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
