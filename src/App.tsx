@@ -12,6 +12,7 @@ const backendBaseUrl = import.meta.env.VITE_BACKEND_URL ?? "http://localhost:800
 const modelUrl = `${import.meta.env.BASE_URL}models/winder.stl`;
 const homePath = import.meta.env.BASE_URL;
 const howItWorksPath = `${import.meta.env.BASE_URL}how-it-works`;
+const modelParametersPath = `${import.meta.env.BASE_URL}model-parameters`;
 
 function getCurrentPath() {
   return window.location.pathname;
@@ -85,6 +86,11 @@ export default function App() {
     currentPath === `${howItWorksPath}/` ||
     currentPath.endsWith("/how-it-works");
 
+  const isModelParametersPage =
+    currentPath === modelParametersPath ||
+    currentPath === `${modelParametersPath}/` ||
+    currentPath.endsWith("/model-parameters");
+
   const footer = (
     <footer className="mt-auto border-t border-border-low pt-6 text-sm text-muted">
       <p>
@@ -97,6 +103,89 @@ export default function App() {
       </p>
     </footer>
   );
+
+  if (isModelParametersPage) {
+    return (
+      <div className="relative min-h-screen overflow-x-clip bg-bg1 text-foreground">
+        <main className="relative z-10 mx-auto flex min-h-screen max-w-4xl flex-col gap-10 border-x border-border-low px-6 py-16">
+          <header className="space-y-4">
+            <button
+              type="button"
+              onClick={() => navigate(homePath)}
+              className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-muted underline underline-offset-4 transition hover:text-foreground"
+            >
+              Back to main page
+            </button>
+            <div className="space-y-3">
+              <p className="text-sm uppercase tracking-[0.18em] text-muted">
+                Model Parameters
+              </p>
+              <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+                Cable Winder — editable parameters (mock)
+              </h1>
+              <p className="max-w-2xl text-base leading-relaxed text-muted">
+                This is a draft page for configuring model dimensions before minting.
+              </p>
+            </div>
+          </header>
+
+          <section className="w-full max-w-3xl space-y-4 rounded-2xl border border-border-low bg-card p-6 shadow-[0_20px_80px_-50px_rgba(0,0,0,0.35)]">
+            <div className="space-y-1">
+              <p className="text-lg font-semibold">3D preview</p>
+              <p className="text-sm text-muted">
+                Live model preview area (prototype).
+              </p>
+            </div>
+            <ErrorBoundary>
+              <STLViewerComponent url={modelUrl} />
+            </ErrorBoundary>
+          </section>
+
+          <section className="w-full max-w-3xl space-y-4 rounded-2xl border border-border-low bg-card p-6 shadow-[0_20px_80px_-50px_rgba(0,0,0,0.35)]">
+            <div className="space-y-1">
+              <p className="text-lg font-semibold">Parameters</p>
+              <p className="text-sm text-muted">
+                Initial mockup fields. Final list and logic to be уточнены later.
+              </p>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="space-y-1 text-sm">
+                <span className="text-muted">Height (mm)</span>
+                <input type="number" value={16} readOnly className="w-full rounded-lg border border-border-low bg-bg1 px-3 py-2" />
+              </label>
+              <label className="space-y-1 text-sm">
+                <span className="text-muted">Width (mm)</span>
+                <input type="number" value={60} readOnly className="w-full rounded-lg border border-border-low bg-bg1 px-3 py-2" />
+              </label>
+              <label className="space-y-1 text-sm">
+                <span className="text-muted">Length (mm)</span>
+                <input type="number" value={60} readOnly className="w-full rounded-lg border border-border-low bg-bg1 px-3 py-2" />
+              </label>
+              <label className="space-y-1 text-sm">
+                <span className="text-muted">Radius (mm)</span>
+                <input type="number" value={16.5} readOnly className="w-full rounded-lg border border-border-low bg-bg1 px-3 py-2" />
+              </label>
+              <label className="space-y-1 text-sm">
+                <span className="text-muted">Inner diameter (mm)</span>
+                <input type="number" value={29} readOnly className="w-full rounded-lg border border-border-low bg-bg1 px-3 py-2" />
+              </label>
+              <label className="space-y-1 text-sm">
+                <span className="text-muted">Wire diameter (mm)</span>
+                <input type="number" value={3} readOnly className="w-full rounded-lg border border-border-low bg-bg1 px-3 py-2" />
+              </label>
+              <label className="space-y-1 text-sm sm:col-span-2">
+                <span className="text-muted">Material</span>
+                <input type="text" value="PLA" readOnly className="w-full rounded-lg border border-border-low bg-bg1 px-3 py-2" />
+              </label>
+            </div>
+          </section>
+
+          {footer}
+        </main>
+      </div>
+    );
+  }
 
   if (isHowItWorksPage) {
     return (
@@ -226,13 +315,22 @@ export default function App() {
               Customize your 3d models for your needs, then mint them as NFTs to
               own, sell, or share.
             </p>
-            <button
-              type="button"
-              onClick={() => navigate(howItWorksPath)}
-              className="cursor-pointer text-sm font-medium text-foreground underline underline-offset-4 transition hover:text-muted"
-            >
-              Read more
-            </button>
+            <div className="flex flex-wrap gap-4">
+              <button
+                type="button"
+                onClick={() => navigate(howItWorksPath)}
+                className="cursor-pointer text-sm font-medium text-foreground underline underline-offset-4 transition hover:text-muted"
+              >
+                Read more
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate(modelParametersPath)}
+                className="cursor-pointer text-sm font-medium text-foreground underline underline-offset-4 transition hover:text-muted"
+              >
+                Model parameters
+              </button>
+            </div>
           </div>
           <ol className="mt-4 space-y-2 text-sm text-foreground">
             <li className="flex gap-2">
