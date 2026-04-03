@@ -67,27 +67,16 @@ export default function App() {
             Become a 3d creator, not a consumer of tools
           </h1>
           <p className="max-w-3xl text-base leading-relaxed text-muted">
-            Drop in <code className="font-mono">@solana/react-hooks</code>, wrap
-            your tree once, and you get wallet connect/disconnect plus
-            ready-to-use hooks for balances and transactions—no manual RPC
-            wiring.
+            Customize your 3d models for you needs, then mint them as NFTs to own, sell, or share.
           </p>
-          <ul className="mt-4 space-y-2 text-sm text-foreground">
+          <ol className="mt-4 space-y-2 text-sm text-foreground">
             <li className="flex gap-2">
               <span
                 className="mt-1.5 h-2 w-2 rounded-full bg-foreground/60"
                 aria-hidden
               />
               <div>
-                <a
-                  className="font-medium underline underline-offset-2"
-                  href="https://solana.com/docs"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Solana docs
-                </a>{" "}
-                — core concepts, RPC, programs, and client patterns.
+                1. customize the 3D model for your needs
               </div>
             </li>
             <li className="flex gap-2">
@@ -96,16 +85,7 @@ export default function App() {
                 aria-hidden
               />
               <div>
-                <a
-                  className="font-medium underline underline-offset-2"
-                  href="https://www.anchor-lang.com/docs/introduction"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Anchor docs
-                </a>{" "}
-                — build and test programs with IDL, macros, and type-safe
-                clients.
+                2. mint as an NFT for your model.
               </div>
             </li>
             <li className="flex gap-2">
@@ -114,35 +94,10 @@ export default function App() {
                 aria-hidden
               />
               <div>
-                <a
-                  className="font-medium underline underline-offset-2"
-                  href="https://faucet.solana.com/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Solana faucet (devnet)
-                </a>{" "}
-                — grab free devnet SOL to try transfers and transactions.
+                3. download the NFT for 3D printing, AR, or whatever you can imagine.
               </div>
-            </li>
-            <li className="flex gap-2">
-              <span
-                className="mt-1.5 h-2 w-2 rounded-full bg-foreground/60"
-                aria-hidden
-              />
-              <div>
-                <a
-                  className="font-medium underline underline-offset-2"
-                  href="https://github.com/solana-foundation/solana-kit/tree/main/packages/react-hooks"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  @solana/react-hooks README
-                </a>{" "}
-                — how this starter wires the client, connectors, and hooks.
-              </div>
-            </li>
-          </ul>
+            </li>            
+          </ol>
         </header>
 
         <section className="w-full max-w-3xl space-y-4 rounded-2xl border border-border-low bg-card p-6 shadow-[0_20px_80px_-50px_rgba(0,0,0,0.35)]">
