@@ -22,7 +22,10 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@metaplex-foundation/mpl-token-metadata-kit": "^0.0.3",
+    "@solana-program/token": "^0.13.0",
     "@solana/client": "^1.0.0-rc.2",
+    "@solana/kit": "^6.7.0",
     "@solana/react-hooks": "^1.0.0-rc.3",
     "@tailwindcss/vite": "^4",
     "react": "^18.3.1",

@@ -1,7 +1,13 @@
-import { useEffect, useState } from "react";
-import { useWalletConnection } from "@solana/react-hooks";
+import { useEffect, useMemo, useState } from "react";
+import {
+  useSendTransaction,
+  useWaitForSignature,
+  useWalletConnection,
+} from "@solana/react-hooks";
 import STLViewerComponent from "./components/STLViewerComponent";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { NFT_MINT_CONFIG } from "./config/nftMint";
+import { buildNftMintPlan, type NftMintPlan } from "./lib/nftMint";
 
 type BackendVersion = {
   project: string;
@@ -21,13 +27,76 @@ function getCurrentPath() {
 export default function App() {
   const { connectors, connect, disconnect, wallet, status } =
     useWalletConnection();
+  const {
+    send,
+    isSending: isMintSubmitting,
+    signature: mintSignature,
+    error: mintSubmitError,
+    reset: resetMintSubmission,
+  } = useSendTransaction();
   const [backendVersion, setBackendVersion] = useState<BackendVersion | null>(
     null
   );
   const [versionError, setVersionError] = useState<string | null>(null);
   const [currentPath, setCurrentPath] = useState(getCurrentPath);
+  const [isPreparingMint, setIsPreparingMint] = useState(false);
+  const [mintResult, setMintResult] = useState<NftMintPlan | null>(null);
+  const [mintError, setMintError] = useState<string | null>(null);
 
   const address = wallet?.account.address.toString();
+  const mintConfirmation = useWaitForSignature(mintSignature ?? undefined, {
+    commitment: "confirmed",
+  });
+  const isMintPending =
+    isPreparingMint ||
+    isMintSubmitting ||
+    mintConfirmation.waitStatus === "waiting";
+  const isMintSuccess = mintConfirmation.waitStatus === "success";
+  const activeMintError =
+    mintError ??
+    (mintSubmitError instanceof Error
+      ? mintSubmitError.message
+      : mintSubmitError
+        ? String(mintSubmitError)
+        : mintConfirmation.waitStatus === "error"
+          ? "Mint confirmation failed on devnet."
+          : null);
+
+  const mintStatusMessage = useMemo(() => {
+    if (!wallet) {
+      return "Connect a wallet to enable minting from this page.";
+    }
+
+    if (isPreparingMint) {
+      return "Preparing NFT mint instructions...";
+    }
+
+    if (isMintSubmitting) {
+      return "Wallet approval received. Submitting the mint transaction...";
+    }
+
+    if (mintConfirmation.waitStatus === "waiting") {
+      return "Mint transaction submitted. Waiting for devnet confirmation...";
+    }
+
+    if (isMintSuccess && mintResult) {
+      return `NFT minted successfully. Mint address: ${mintResult.mintAddress}`;
+    }
+
+    if (activeMintError) {
+      return activeMintError;
+    }
+
+    return "Ready to mint a new NFT using the hosted metadata configuration.";
+  }, [
+    wallet,
+    isPreparingMint,
+    isMintSubmitting,
+    mintConfirmation.waitStatus,
+    isMintSuccess,
+    mintResult,
+    activeMintError,
+  ]);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,6 +148,30 @@ export default function App() {
   function navigate(path: string) {
     window.history.pushState({}, "", path);
     setCurrentPath(path);
+  }
+
+  async function handleMint() {
+    if (!wallet) {
+      setMintError("Connect a wallet before minting.");
+      return;
+    }
+
+    setIsPreparingMint(true);
+    setMintError(null);
+    setMintResult(null);
+    resetMintSubmission();
+
+    try {
+      const plan = await buildNftMintPlan(wallet);
+      setMintResult(plan);
+      await send({ instructions: plan.instructions });
+    } catch (error) {
+      setMintError(
+        error instanceof Error ? error.message : "Minting failed unexpectedly."
+      );
+    } finally {
+      setIsPreparingMint(false);
+    }
   }
 
   const isHowItWorksPage =
@@ -178,6 +271,70 @@ export default function App() {
                 <span className="text-muted">Material</span>
                 <input type="text" value="PLA" readOnly className="w-full rounded-lg border border-border-low bg-bg1 px-3 py-2" />
               </label>
+            </div>
+
+            <div className="space-y-4 border-t border-border-low pt-4">
+              <div className="space-y-1">
+                <p className="text-lg font-semibold">Mint NFT</p>
+                <p className="text-sm text-muted">
+                  Mint this prototype as a devnet NFT using the existing wallet
+                  connection and hosted metadata.
+                </p>
+              </div>
+
+              <div className="grid gap-2 rounded-xl border border-border-low bg-bg1 p-4 text-sm text-muted">
+                <p>
+                  Metadata JSON:{" "}
+                  <span className="font-mono text-xs text-foreground">
+                    {NFT_MINT_CONFIG.metadataUri}
+                  </span>
+                </p>
+                <p>
+                  Stub image:{" "}
+                  <span className="font-mono text-xs text-foreground">
+                    {NFT_MINT_CONFIG.imageUri}
+                  </span>
+                </p>
+                {mintSignature ? (
+                  <p>
+                    Transaction signature:{" "}
+                    <span className="font-mono text-xs text-foreground">
+                      {mintSignature.toString()}
+                    </span>
+                  </p>
+                ) : null}
+                {mintResult ? (
+                  <p>
+                    Planned mint address:{" "}
+                    <span className="font-mono text-xs text-foreground">
+                      {mintResult.mintAddress}
+                    </span>
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => void handleMint()}
+                  disabled={!wallet || isMintPending}
+                  className="inline-flex cursor-pointer items-center rounded-lg border border-border-low bg-cream px-4 py-2 text-sm font-medium text-foreground transition hover:-translate-y-0.5 hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isMintPending ? "Minting..." : "Mint NFT"}
+                </button>
+                <span
+                  className={`text-sm ${
+                    activeMintError
+                      ? "text-red-600"
+                      : isMintSuccess
+                        ? "text-green-700"
+                        : "text-muted"
+                  }`}
+                  role={activeMintError ? "alert" : undefined}
+                >
+                  {mintStatusMessage}
+                </span>
+              </div>
             </div>
           </section>
 
