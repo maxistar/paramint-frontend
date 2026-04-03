@@ -7,4 +7,7 @@ const base = process.env.BASE_PATH || "/";
 export default defineConfig({
   base,
   plugins: [react(), tailwindcss()],
+  optimizeDeps: {
+    exclude: ["react-stl-viewer"],
+  },
 });
