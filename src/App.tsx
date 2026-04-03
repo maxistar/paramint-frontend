@@ -7,6 +7,7 @@ import {
 import STLViewerComponent from "./components/STLViewerComponent";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { NFT_MINT_CONFIG } from "./config/nftMint";
+import { formatNftMintError } from "./lib/nftMintError";
 import { buildNftMintPlan, type NftMintPlan } from "./lib/nftMint";
 
 type BackendVersion = {
@@ -164,11 +165,13 @@ export default function App() {
     try {
       const plan = await buildNftMintPlan(wallet);
       setMintResult(plan);
-      await send({ instructions: plan.instructions });
+      await send({
+        instructions: plan.instructions,
+        prepareTransaction: false,
+      });
     } catch (error) {
-      setMintError(
-        error instanceof Error ? error.message : "Minting failed unexpectedly."
-      );
+      console.error("NFT mint failed", error);
+      setMintError(formatNftMintError(error));
     } finally {
       setIsPreparingMint(false);
     }

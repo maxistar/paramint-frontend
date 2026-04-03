@@ -1,0 +1,34 @@
+{
+  "name": "Paramint Cable Winder",
+  "symbol": "PMINT",
+  "description": "Prototype NFT for the Paramint Cable Winder model. This asset is minted from the model parameters flow and currently uses hosted placeholder media.",
+  "image": "https://dddmint.preloader.com/images/mock-nft.png",
+  "external_url": "https://dddmint.preloader.com/model-parameters",
+  "attributes": [
+    {
+      "trait_type": "Category",
+      "value": "3D Print"
+    },
+    {
+      "trait_type": "Model",
+      "value": "Cable Winder"
+    },
+    {
+      "trait_type": "Material",
+      "value": "PLA"
+    },
+    {
+      "trait_type": "Prototype",
+      "value": "Yes"
+    }
+  ],
+  "properties": {
+    "category": "image",
+    "files": [
+      {
+        "type": "image/png",
+        "uri": "https://dddmint.preloader.com/images/mock-nft.png"
+      }
+    ]
+  }
+}
