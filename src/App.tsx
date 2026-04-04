@@ -367,8 +367,15 @@ export default function App() {
                 Paramint: create and own your 3D models
               </h1>
               <p className="max-w-2xl text-base leading-relaxed text-muted">
-                Paramint is a tool for generating parametric 3D models, where
-                you do not just download a file, you own your design.
+                We are building a platform where 3D model generation becomes an
+                open-source process. Recipes are published on GitHub, where they
+                can be forked and improved through pull requests.
+              </p>
+              <p className="max-w-2xl text-base leading-relaxed text-muted">
+                When a user generates a model and mints an NFT, rewards are
+                automatically distributed between recipe authors and the
+                platform. This turns open-source contribution into a sustainable
+                economy.
               </p>
             </div>
           </header>
