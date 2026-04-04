@@ -364,7 +364,7 @@ export default function App() {
                 How It Works
               </p>
               <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-                Paramint: create and own your 3D models
+                3dmint: create and own your 3D models
               </h1>
               <p className="max-w-2xl text-base leading-relaxed text-muted">
                 We are building a platform where 3D model generation becomes an
